@@ -41,7 +41,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Selective\\BasePath\\": "src/"
+            "Selective\\BasePath\\": "src/",
+            "Apps\\": "Apps/"
         }
     },
     "autoload-dev": {
