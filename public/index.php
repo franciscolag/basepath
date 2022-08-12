@@ -9,6 +9,8 @@ use prueba1\Prueba;
 require_once __DIR__ . '/../vendor/autoload.php';
 require '../src/Models/Camiones.php';
 require '../src/Models/Propietarios.php';
+require '../src/login/Auth.php';
+require '../src/Models/Usuarios.php';
 
 
 $app = AppFactory::create();
@@ -38,6 +40,14 @@ $app->get('/api/camiones',function(Request $request, Response  $response){
 $app->get('/api/propietarios',function(Request $request, Response  $response){
     $propietarios = new Propietarios();
     $response->getBody()->write($propietarios->listarPropietarios());
+    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+});
+
+$app->get('/api/login',function(Request $request, Response  $response,$user,$pass){
+    $usuario = new Usuarios();
+    $Auth = new Auth();
+    $Auth->autenticar($usuario->datos($user),$pass);
+    $response->getBody()->write($Auth->listarPropietarios());
     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 });
 
