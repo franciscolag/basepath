@@ -1,25 +1,25 @@
 <?php
 require_once '../src/config/Db.php';
+//require_once '../config/Db.php';
 
-class Usuarios
-{
-    public function datos($nombre)
-    {
+class Usuarios{
+    public function datos($nombre){
         try {
             $sql = "Select nombre from usuarios where uid_ldap = ?";
             $db = new db();
             $db = $db->conectionDb();
-            $resultado = $db->query($sql);
-            if ($resultado->execute(array($nombre))) {
-                while ($fila = $resultado->fetch()) {
-                    return json_encode(202);
+            $sentencia = $db->prepare($sql);
+                while ($fila = $sentencia->fetch()) {
+                    if(isset($fila['nombre']))
+                        return strval($fila['nombre']);
+                    else
+                        return 500;
                 }
-            } else {
-                return json_encode(401);
-            }
         } catch (PDOException $err) {
             // Imprime error de conexión
-            echo "ERROR: No se pudo conectar a la base de datos: " . $err->getMessage();
+            return 500;
+            //return 'error catch';
+            //echo "ERROR: No se pudo conectar a la base de datos: " . $err->getMessage();
         }
     }
 }
