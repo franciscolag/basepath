@@ -10,8 +10,14 @@ require '../src/Models/Camiones.php';
 require '../src/Models/Propietarios.php';
 require '../src/Models/Operadores.php';
 require '../src/Models/Sindicatos.php';
+require '../src/Models/CentrosCosto.php';
 require '../src/Models/Usuarios.php';
 require '../src/login/Auth.php';
+header('Access-Control-Allow-Origin:*');
+header('Access-Control-Allow-Headers:X-Request-With');
+
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
 
 
 $app = AppFactory::create();
@@ -35,6 +41,7 @@ $app->get('/', function (Request $request, Response $response) {
 $app->get('/api/camiones', function (Request $request, Response  $response) {
     $camiones = new Camiones();
     $response->getBody()->write($camiones->listarCamiones());
+    $response->withHeader('Access-Control-Allow-Credentials', 'true');
     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 });
 
@@ -56,9 +63,15 @@ $app->get('/api/sindicatos', function (Request $request, Response  $response) {
     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 });
 
+$app->get('/api/cc', function (Request $request, Response  $response) {
+    $cc = new CentrosCosto();
+    $response->getBody()->write($cc->listarCC());
+    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+});
+
 /*Metodos POST de la API*/
 
-$app->post('/api/sindicatos', function (Request $request, Response  $response) {
+$app->post('/api/sindicato', function (Request $request, Response  $response) {
     try {
         $razon_social = $request->getHeader('razon_social');
         $razon_social = $razon_social[0];
@@ -102,7 +115,19 @@ $app->post('/api/sindicatos', function (Request $request, Response  $response) {
     }
 });
 
+$app->post('/api/propietario', function (Request $request, Response  $response) {
+    try {
+        $nombre = $request->getHeader('nombre');
+        $nombre = $nombre[0];
+        $apellido = $request->getHeader('apellido');
+        $apellido = $apellido[0];
 
+        return $response->withHeader('Content-Type', 'application/json')
+            ->withStatus();
+    } catch (Exception $exception) {
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+});
 
 /*Login*/
 $app->get('/api/login', function (Request $request, Response  $response) {
@@ -121,8 +146,6 @@ $app->get('/api/tipo', function (Request $request, Response  $response) {
     $response->getBody()->write($objUser->tipo($user));
     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 });
-
-
 
 // Run app
 $app->run();
