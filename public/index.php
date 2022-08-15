@@ -61,5 +61,6 @@ $app->get('/api/tipo',function(Request $request, Response  $response){
 });
 
 
+
 // Run app
 $app->run();
