@@ -9,7 +9,7 @@ use prueba1\Prueba;
 require_once __DIR__ . '/../vendor/autoload.php';
 require '../src/Models/Camiones.php';
 require '../src/Models/Propietarios.php';
-require '../src/Models/Usuarios2.php';
+require '../src/Models/Usuarios.php';
 require '../src/login/Auth.php';
 
 
@@ -44,14 +44,22 @@ $app->get('/api/propietarios',function(Request $request, Response  $response){
 });
 
 $app->get('/api/login',function(Request $request, Response  $response){
+    $pass = $request->getHeader('pass');
+    $pass=$pass[0];
     $user = $request->getHeader('user');
     $user = $user[0];
-    $pass = $request->getHeader('pass');
-    $pass = $pass[0];
-    $usuarios = new Usuarios2();
-    $response->getBody()->write($usuarios->login($user,$pass));
+    $Auth = new Auth();
+    return $response->withHeader('Content-Type', 'application/json')->withStatus((int)$Auth->autenticar($user,$pass));
+});
+
+$app->get('/api/tipo',function(Request $request, Response  $response){
+    $user = $request->getHeader('user');
+    $user = $user[0];
+    $objUser = new Usuarios();
+    $response->getBody()->write($objUser->tipo($user));
     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 });
+
 
 // Run app
 $app->run();
