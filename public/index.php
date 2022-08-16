@@ -116,13 +116,22 @@ $app->post('/api/sindicato', function (Request $request, Response  $response) {
 
 $app->post('/api/propietario', function (Request $request, Response  $response) {
     try {
-        $nombre = $request->getHeader('nombre');
+        $nombre = $request->getHeader('nomProp');
         $nombre = $nombre[0];
-        $apellido = $request->getHeader('apellido');
+        $apellido = $request->getHeader('appProp');
         $apellido = $apellido[0];
-
+        $telefono = $request->getHeader('telProp');
+        $telefono = $telefono[0];
+        $numIdProp = $request->getHeader('numIdProp');
+        $numIdProp = $numIdProp[0];
+        $fecExpId = $request->getHeader('fecExpId');
+        $fecExpId = $fecExpId[0];
+        $sin_prop = $request->getHeader('sin_prop');
+        $sin_prop = $sin_prop[0];
+        $imgFileIdProp = $request->getHeader('imgFileIdProp');
+        $imgFileIdProp =  $imgFileIdProp[0];
         return $response->withHeader('Content-Type', 'application/json')
-            ->withStatus();
+            ->withStatus(200);
     } catch (Exception $exception) {
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }

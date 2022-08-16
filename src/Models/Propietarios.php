@@ -36,4 +36,56 @@ class Propietarios{
             return json_encode("400");
         }
     }
+
+    public function insertaPropietario($nomProp, $appProp, $telProp, $numIdProp, $sinProp, $imgFileIdProp, $fecExpId){
+        try {
+            $sql = "INSERT INTO `propietarios`(`nombres`, `apellidos`, `telefono`, `num_id`,`id_sindicato`
+                    , `archivo_ine`) VALUES (:nombres, :apellidos, :telefono, :num_id, :id_sindicato, :file_id_prop);";
+            $db = new db();
+            $db = $db->conectionDb();
+            $sentencia = $db->prepare($sql);
+            $sentencia->bindParam(':nombres', $nomProp, PDO::PARAM_STR);
+            $sentencia->bindParam(':apellidos', $appProp, PDO::PARAM_STR);
+            $sentencia->bindParam(':telefono', $telProp, PDO::PARAM_STR);
+            $sentencia->bindParam(':num_id', $numIdProp, PDO::PARAM_STR);
+            $sentencia->bindParam(':id_sindicato', $sinProp, PDO::PARAM_INT);
+            $sentencia->bindParam(':file_id_prop', $imgFileIdProp, PDO::PARAM_LOB);
+            $sentencia->execute();
+            $this->insertaExpiracion($this->idUltimoInsert(),15,$fecExpId);
+            return  201;
+        } catch (PDOException $err) {
+            return 500;
+        }
+    }
+
+    public function insertaExpiracion($id,$tipo,$fecha){
+        try {
+            $sql = "INSERT INTO expiraciones_propietarios(id_propietario, tipo, fecha) VALUES
+                    (:id_propietario, :tipo, :fecha);";
+            $db = new db();
+            $db = $db->conectionDb();
+            $sentencia = $db->prepare($sql);
+            $sentencia->bindParam(':id_propietario', $id, PDO::PARAM_INT);
+            $sentencia->bindParam(':tipo', $tipo, PDO::PARAM_INT);
+            $sentencia->bindParam(':fecha', $fecha, PDO::PARAM_STR);
+            $sentencia->execute();
+        } catch (PDOException $err) {
+            return 500;
+        }
+    }
+
+    public function idUltimoInsert(){
+        try {
+            $sql = "SELECT id from propietarios order by id DESC LIMIT 1;";
+            $db = new db();
+            $db = $db->conectionDb();
+            $resultado  = $db->query($sql);
+            while ($fila = $resultado->fetch()) {
+                return $fila['id'];
+            }
+        } catch (PDOException $err) {
+            // Imprime error de conexión
+            return 500;
+        }
+    }
 }
