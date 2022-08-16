@@ -4,7 +4,7 @@ require_once '../src/config/Db.php';
 class Usuarios{
     public function datos($nombre){
         try {
-            $sql = "Select nombre from usuarios where uid_ldap = :nombre and usuarios.tipo_usuario>0";
+            $sql = "Select nombre from usuarios where uid_ldap = :nombre and usuarios.tipo_usuario>0;";
             $db = new db();
             $db = $db->conectionDb();
             $sentencia = $db->prepare($sql);
@@ -24,7 +24,7 @@ class Usuarios{
 
     public function tipo($nombre){
         try {
-            $sql = "Select tipo_usuario from usuarios where uid_ldap = :nombre";
+            $sql = "Select tipo_usuario from usuarios where uid_ldap = :nombre;";
             $db = new db();
             $db = $db->conectionDb();
             $sentencia = $db->prepare($sql);

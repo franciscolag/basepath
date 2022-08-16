@@ -70,7 +70,7 @@ $app->get('/api/cc', function (Request $request, Response  $response) {
 
 /*Metodos POST de la API*/
 
-$app->post('/api/sindicato', function (Request $request, Response  $response) {
+$app->post('/api/sindicatos', function (Request $request, Response  $response) {
     try {
         $razon_social = $request->getHeader('razon_social');
         $razon_social = $razon_social[0];
@@ -114,14 +114,15 @@ $app->post('/api/sindicato', function (Request $request, Response  $response) {
     }
 });
 
-$app->post('/api/propietario', function (Request $request, Response  $response) {
+$app->post('/api/propietarios', function (Request $request, Response  $response) {
     try {
+        $propietario = new Propietarios();
         $nombre = $request->getHeader('nomProp');
         $nombre = $nombre[0];
         $apellido = $request->getHeader('appProp');
         $apellido = $apellido[0];
         $telefono = $request->getHeader('telProp');
-        $telefono = $telefono[0];
+        $telefono = $telefono[0] ?? "";
         $numIdProp = $request->getHeader('numIdProp');
         $numIdProp = $numIdProp[0];
         $fecExpId = $request->getHeader('fecExpId');
@@ -131,14 +132,50 @@ $app->post('/api/propietario', function (Request $request, Response  $response) 
         $imgFileIdProp = $request->getHeader('imgFileIdProp');
         $imgFileIdProp =  $imgFileIdProp[0];
         return $response->withHeader('Content-Type', 'application/json')
-            ->withStatus(200);
+            ->withStatus((int)$propietario->insertaPropietario($nombre, $apellido, $telefono, $numIdProp, $sin_prop, $imgFileIdProp, $fecExpId));
+    } catch (Exception $exception) {
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+    }
+});
+
+$app->post('/api/operadores', function (Request $request, Response  $response) {
+    try {
+        $operador = new Operadores();
+        $nombre = $request->getHeader('nombre');
+        $nombre = $nombre[0];
+        $apellido = $request->getHeader('ape');
+        $apellido = $apellido[0];
+        $nss = $request->getHeader('nss');
+        $nss = $nss[0] ?? "";
+        $fileNSS = $request->getHeader('fileNSS');
+        $fileNSS = $nss[0] ?? "";
+        $identificacion = $request->getHeader('identificacion');
+        $identificacion = $identificacion[0];
+        $fileIdOpe = $request->getHeader('fileIdOpe');
+        $fileIdOpe = $fileIdOpe[0];
+        $fecExpId = $request->getHeader('fecExpId');
+        $fecExpId = $fecExpId[0];
+        $numLic = $request->getHeader('numLic');
+        $numLic = $numLic[0] ?? "";
+        $fileLicencia = $request->getHeader('fileLicencia');
+        $fileLicencia = $fileLicencia[0] ?? "";
+        $fecExpLic = $request->getHeader('fecExpLic');
+        $fecExpLic = $fecExpLic[0] ?? "";
+        $numCertMed = $request->getHeader('numCertMed');
+        $numCertMed = $numCertMed[0] ?? "";
+        $fileCert = $request->getHeader('fileCert');
+        $fileCert = $fileCert[0] ?? "";
+        $fecExpLic = $request->getHeader('fecExpLic');
+        $fecExpLic = $fecExpLic[0] ?? "";
+        return $response->withHeader('Content-Type', 'application/json')
+            ->withStatus((int)$operador->insertaPropietario());
     } catch (Exception $exception) {
         return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
     }
 });
 
 /*Login*/
-$app->get('/api/login', function (Request $request, Response  $response) {
+$app->post('/api/login', function (Request $request, Response  $response) {
     $pass = $request->getHeader('pass');
     $pass = $pass[0];
     $user = $request->getHeader('user');
@@ -152,6 +189,20 @@ $app->get('/api/tipo', function (Request $request, Response  $response) {
     $user = $user[0];
     $objUser = new Usuarios();
     $response->getBody()->write($objUser->tipo($user));
+    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+});
+
+$app->get('/api/hola', function (Request $request, Response  $response) {
+    $user = $request->getHeader('user');
+    $user = $user[0];
+    $response->getBody()->write("Hola " . $user);
+    return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+});
+
+$app->get('/api/hola2', function (Request $request, Response  $response) {
+    $user = $request->getQueryParams();
+    $user = $user['nombre'];
+    $response->getBody()->write("Hola " . $user);
     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 });
 

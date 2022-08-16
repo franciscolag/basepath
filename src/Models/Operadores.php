@@ -55,4 +55,69 @@ class Operadores
             return json_encode("400");
         }
     }
+
+    public function idUltimoInsert(){
+        try {
+            $sql = "SELECT id from operadores order by id DESC LIMIT 1;";
+            $db = new db();
+            $db = $db->conectionDb();
+            $resultado  = $db->query($sql);
+            while ($fila = $resultado->fetch()) {
+                return $fila['id'];
+            }
+            return true;
+        } catch (PDOException $err) {
+            // Imprime error de conexión
+            return false;
+        }
+    }
+
+    public function insertaExpiracion($id, $tipo, $fecha){
+        try {
+            $sql = "INSERT INTO expiraciones_operadores(id_operador, tipo, fecha) VALUES
+                    (:id_operador, :tipo, :fecha);";
+            $db = new db();
+            $db = $db->conectionDb();
+            $sentencia = $db->prepare($sql);
+            $sentencia->bindParam(':id_operador', $id, PDO::PARAM_INT);
+            $sentencia->bindParam(':tipo', $tipo, PDO::PARAM_INT);
+            $sentencia->bindParam(':fecha', $fecha, PDO::PARAM_STR);
+            $sentencia->execute();
+            return true;
+        } catch (PDOException $err) {
+            return false;
+        }
+    }
+
+    public function insertaOperadores($nombre, $ape, $nss, $identificacion, $numLic, $numCertMed, $img){
+        try {
+            $sql = "INSERT INTO `operadores`(`nombres`, `apellidos`, `nss`, `num_id`, `num_lic`, `num_cert_med`
+                                            , `archivo_seg_soc`, `archivo_ine`, `archivo_lic_cond`, `archivo_cert_med`) VALUES 
+                    (:nombres, :apellidos, :nss, :num_id,  :num_lic, :num_cert_med,:file_nss, :file_ine,
+                     :file_lic_cond, :file_cert_med);";
+            $db = new db();
+            $db = $db->conectionDb();
+            $sentencia = $db->prepare($sql);
+            $sentencia->bindParam(':nombres', $nombre, PDO::PARAM_STR);
+            $sentencia->bindParam(':apellidos', $ape, PDO::PARAM_STR);
+            $sentencia->bindParam(':nss', $nss, PDO::PARAM_STR);
+            $sentencia->bindParam(':num_id', $identificacion, PDO::PARAM_STR);
+            $sentencia->bindParam(':num_lic', $numLic, PDO::PARAM_STR);
+            $sentencia->bindParam(':num_cert_med', $numCertMed, PDO::PARAM_STR);
+            $sentencia->bindParam(':file_nss', $imgFileNSS, PDO::PARAM_LOB);
+            $sentencia->bindParam(':file_ine', $imgFileIdOpe, PDO::PARAM_LOB);
+            $sentencia->bindParam(':file_lic_cond', $imgFileLicOpe, PDO::PARAM_LOB);
+            $sentencia->bindParam(':file_cert_med', $imgFileCert, PDO::PARAM_LOB);
+            $sentencia->execute();
+            $id = $this->idUltimoInsert();
+            if ($this->insertaExpiracion($id, 13, $fecExpId) == false ||
+                $this->insertaExpiracion($id, 14, $fecExpId) == false||
+                $this->insertaExpiracion($id, 16, $fecExpId) == false||$id == false) {
+                return 501;
+            }
+            return  201;
+        } catch (PDOException $err) {
+            return 502;
+        }
+    }
 }

@@ -6,7 +6,7 @@ class Auth{
     public function autenticar($user, $pass){
         $objUsuario = new Usuarios();
         $nombre = $objUsuario->datos($user);
-        if ($nombre == '401' || $nombre == '500') {
+        if ($nombre == '500') {
             return '401';
         } else {
             $config['version'] = '1.0';
@@ -20,7 +20,7 @@ class Auth{
             if ($ldapconn) {
                 // realizando la autenticación
                 try {
-                    $ldapbind = @ldap_bind($ldapconn, $config['usernameConsultaLdap'], $config['passwordConsultaLdap']);
+                    $ldapbind = ldap_bind($ldapconn, $config['usernameConsultaLdap'], $config['passwordConsultaLdap']);
 
                     // verificación del enlace
                     if ($ldapbind) {
@@ -28,7 +28,7 @@ class Auth{
                         // verificación del enlace
                         return "200";
                     } else {
-                        return "401";
+                        return "400";
                     }
                 }catch(Exception $e){
                     return "400";

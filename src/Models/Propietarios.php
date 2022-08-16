@@ -1,8 +1,10 @@
 <?php
-require_once '../src/config/Db.php';
-class Propietarios{
 
-    public function listarPropietarios(){
+require_once '../src/config/Db.php';
+class Propietarios
+{
+    public function listarPropietarios()
+    {
         $sql = "select propietarios.id as prop_id, 
         CONCAT(propietarios.nombres,' ',propietarios.apellidos) as nombre_compl,
         propietarios.nombres as nombre,propietarios.apellidos as apellido,
@@ -24,10 +26,11 @@ class Propietarios{
                 $propietarios[$i]['num_id'] = $fila['num_id'];
                 $propietarios[$i]['fech_exp_id'] = $fila['fech_exp_id'];
                 $propietarios[$i]['id_sindicato'] = $fila['id_sindicato'];
-                if ($fila['archivo_ine'] != null)
+                if ($fila['archivo_ine'] != null) {
                     $propietarios[$i]['archivo_ine'] = '✓';
-                else
+                } else {
                     $propietarios[$i]['archivo_ine'] = 'N/A';
+                }
                 $i++;
             }
             return json_encode($propietarios);
@@ -37,7 +40,8 @@ class Propietarios{
         }
     }
 
-    public function insertaPropietario($nomProp, $appProp, $telProp, $numIdProp, $sinProp, $imgFileIdProp, $fecExpId){
+    public function insertaPropietario($nomProp, $appProp, $telProp, $numIdProp, $sinProp, $imgFileIdProp, $fecExpId)
+    {
         try {
             $sql = "INSERT INTO `propietarios`(`nombres`, `apellidos`, `telefono`, `num_id`,`id_sindicato`
                     , `archivo_ine`) VALUES (:nombres, :apellidos, :telefono, :num_id, :id_sindicato, :file_id_prop);";
@@ -51,14 +55,17 @@ class Propietarios{
             $sentencia->bindParam(':id_sindicato', $sinProp, PDO::PARAM_INT);
             $sentencia->bindParam(':file_id_prop', $imgFileIdProp, PDO::PARAM_LOB);
             $sentencia->execute();
-            $this->insertaExpiracion($this->idUltimoInsert(),15,$fecExpId);
+            $id = $this->idUltimoInsert();
+            if ($this->insertaExpiracion($id, 15, $fecExpId) == false || $id == false) {
+                return 501;
+            }
             return  201;
         } catch (PDOException $err) {
-            return 500;
+            return 502;
         }
     }
 
-    public function insertaExpiracion($id,$tipo,$fecha){
+    public function insertaExpiracion($id, $tipo, $fecha){
         try {
             $sql = "INSERT INTO expiraciones_propietarios(id_propietario, tipo, fecha) VALUES
                     (:id_propietario, :tipo, :fecha);";
@@ -69,8 +76,9 @@ class Propietarios{
             $sentencia->bindParam(':tipo', $tipo, PDO::PARAM_INT);
             $sentencia->bindParam(':fecha', $fecha, PDO::PARAM_STR);
             $sentencia->execute();
+            return true;
         } catch (PDOException $err) {
-            return 500;
+            return false;
         }
     }
 
@@ -83,9 +91,10 @@ class Propietarios{
             while ($fila = $resultado->fetch()) {
                 return $fila['id'];
             }
+            return true;
         } catch (PDOException $err) {
             // Imprime error de conexión
-            return 500;
+            return false;
         }
     }
 }
